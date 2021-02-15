@@ -7,6 +7,8 @@
 * OpenGL Notes: 
 * OpenGL is a state machine. Must bind (or select) buffer before it can be rendered. Think about how 
 * layers operated in Photoshop. Layer must be selected to do work on said layer. 
+* 
+* Vertex is composed of many attributes: position, colors, normal
 */
 int main(void)
 {
@@ -17,7 +19,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "OpenGL Practice", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -48,8 +50,20 @@ int main(void)
     glGenBuffers(1, &buffer);
     /* selecting buffer */
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    /* give OpenGL the data */
+    /* give OpenGL the data, can do this later buffer just needs to be bound */
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
+    /* To enable and disable generic vertex attribute array */
+    glEnableVertexAttribArray(0);
+    /* glVertexAttribPointer info:
+    * index - index of attribute in buffer
+    * size -  number of components per generic vertex attribute (x, y coords? 2)
+    * type - type of data we are providing (float)
+    * normalized - specifies whether fixed-point data values shold be normalized (GL_TRUE)
+    * stride - amount of bytes between each vertex, how many bytes to go forward to next vertex
+    * pointer - how many bytes to go forward to next attribute, bytes to attributes from vertex ptr
+    */
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
