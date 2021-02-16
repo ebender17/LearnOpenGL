@@ -26,6 +26,11 @@
 * 
 * Keep in mind: Better to perform calculations in vertex shader if possible (as it is less called less). 
 * Sometime cannot avoid calculations in Fragment Shader however (such as lighting). 
+* 
+* GPUs use triangles as their drawing primatives. Therefore, rectangles are composed of two triangles. However, 
+* this causes vertices to be stored more than once (duplicated). Can avoid this memory waste using index buffers. 
+* 
+* Index buffers: Allow one to reuse vertices. 
 */
 
 struct ShaderProgramSource
@@ -151,10 +156,16 @@ int main(void)
     /* Print OpenGL version */ 
     std::cout << glGetString(GL_VERSION) << std::endl; 
 
-    float positions[6] = {
+    float positions[] = {
         -0.5f, -0.5f, 
-        0.0f, 0.5f, 
-        0.5f, -0.5f
+        0.5f, -0.5f, 
+        0.5f, 0.5f, 
+        -0.5f, 0.5f
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
     };
 
     /* id of generated buffer */
@@ -163,7 +174,9 @@ int main(void)
     /* selecting buffer */
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     /* give OpenGL the data, can do this later buffer just needs to be bound */
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    /* cannot use a signed type for index buffer*/
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW);
+
 
     /* To enable and disable generic vertex attribute array */
     glEnableVertexAttribArray(0);
@@ -177,11 +190,15 @@ int main(void)
     */
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
+    /* index buffer */
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    /* selecting buffer */
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    /* give OpenGL the data, can do this later buffer just needs to be bound */
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    std::cout << "Vertex" << std::endl; 
-    std::cout << source.VertexSource << std::endl; 
-    std::cout << "Fragment" << std::endl;
-    std::cout << source.FragmentSource << std::endl;
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
     /* bind shader */
     glUseProgram(shader); 
@@ -193,7 +210,10 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* draw call used w/o index buffers */
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        /* draw call used w/ index buffers */
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
