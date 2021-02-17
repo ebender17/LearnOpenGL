@@ -1,0 +1,57 @@
+/*********************************OpenGL Notes*********************************/
+- OpenGL is a state machine. Must bind (or select) buffer before it can be rendered. Think about how 
+layers operated in Photoshop. Layer must be selected to do work on said layer. 
+
+- Basic rendering pipeline: Draw call -> Vertex Shader -> Fragment Shader
+
+- Vertex is composed of many attributes: position, colors, normal
+
+/*********************************Shaders*********************************/
+- Shaders: Programs ran on GPU. 
+
+- Vertex Shader: Called for each vertex (ex. called three times for a triangle). 
+- Primary purpose is to tell OpenGL where you want the vertex
+- to be in the window. Also used to pass attributes into next stage (Fragment Shader)
+
+- Fragment Shader: Runs once for each pixel that needs to be rasterized. Decides the correct color the 
+pixel needs to be. 
+
+- Keep in mind: Better to perform calculations in vertex shader if possible (as it is less called less). 
+Sometime cannot avoid calculations in Fragment Shader however (such as lighting). 
+
+
+/*********************************Index Buffers*********************************/
+
+- GPUs use triangles as their drawing primatives. Therefore, rectangles are composed of two triangles. However, 
+- this causes vertices to be stored more than once (duplicated). Can avoid this memory waste using index buffers. 
+
+- Index buffers: Allow one to reuse vertices. 
+
+
+/*********************************Uniforms*********************************/
+- Uniforms: Set per draw. Allows us to set shader data in C++
+
+
+/*********************************Vertex Arrays*********************************/
+
+- Unique to OpenGL. 
+- Definition: Bind Vertex Buffers with layout. 
+- Without Vertex Arrays would have to complete the following before each draw: 
+	Bind Shaders 
+	Setup Uniforms 
+	Bind Vertex Buffer (*)
+	Setup Layout of Vertex Buffer (*)
+	Bind index buffer 
+	Draw 
+- Vertex Array Object (VAO) contains binding between Vertex Buffer(s) (VBO) and the layout specification. 
+- The * steps above become binding the VAO as the VBO is linked to the VAO. 
+
+- OpenGL comability profile creates a VAO for us by default. Whereas the core profile does not. Therefore, we need to create a VAO ourselves
+and bind it if using this profile. Technically VAOs are mandatory. 
+
+Two approaches to VAO: 
+	1. One global VAO for the entire program and then bind different buffers and different vertex specifications everytime. 
+	2. Have a seperate VAO for each unique piece of geometry. 
+
+Which one is more optimal?
+	In the past, Nvida said approach 1 was better. However, it depends. With current drivers it may depend on your platform. Using muliple VAOs is what OpenGL recommends. 

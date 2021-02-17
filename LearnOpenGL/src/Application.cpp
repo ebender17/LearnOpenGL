@@ -12,44 +12,12 @@
 #define GLCall(x) GLClearError();\
 x;\
 ASSERT(GLLogCall(#x, __FILE__, __LINE__))
-/*
-* OpenGL Notes: 
-* OpenGL is a state machine. Must bind (or select) buffer before it can be rendered. Think about how 
-* layers operated in Photoshop. Layer must be selected to do work on said layer. 
-* 
-* Basic rendering pipeline: Draw call -> Vertex Shader -> Fragment Shader
-* 
-* Vertex is composed of many attributes: position, colors, normal
-* 
-* Shaders: Programs ran on GPU. 
-* 
-* Vertex Shader: Called for each vertex (ex. called three times for a triangle). 
-* Primary purpose is to tell OpenGL where you want the vertex
-* to be in the window. Also used to pass attributes into next stage (Fragment Shader)
-* 
-* Fragment Shader: Runs once for each pixel that needs to be rasterized. Decides the correct color the 
-* pixel needs to be. 
-* 
-* Keep in mind: Better to perform calculations in vertex shader if possible (as it is less called less). 
-* Sometime cannot avoid calculations in Fragment Shader however (such as lighting). 
-* 
-* GPUs use triangles as their drawing primatives. Therefore, rectangles are composed of two triangles. However, 
-* this causes vertices to be stored more than once (duplicated). Can avoid this memory waste using index buffers. 
-* 
-* Index buffers: Allow one to reuse vertices. 
-* 
-* Error checking: Wrap every gl call into GLCall macro.
-* 
-* Uniforms: Set per draw. Allows us to set shader data in C++
-*/
-
 
 /* call clear before gl func to clear errors to ensure we are not getting errors from other functions */
 static void GLClearError()
 {
     while (glGetError() != GL_NO_ERROR);
 }
-
 
 /* call after GLClearError and gl func to only get errors from the above func */
 /*
@@ -170,6 +138,11 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    /* Create window and context with CORE profile*/
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "OpenGL Practice", NULL, NULL);
     if (!window)
@@ -206,6 +179,11 @@ int main(void)
         2, 3, 0
     };
 
+    /* generate vao */
+    unsigned int vao; 
+    GLCall(glGenVertexArrays(1, &vao)); 
+    GLCall(glBindVertexArray(vao));
+
     /* id of generated buffer */
     unsigned int buffer;
     GLCall(glGenBuffers(1, &buffer));
@@ -213,19 +191,21 @@ int main(void)
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
     /* give OpenGL the data, can do this later buffer just needs to be bound */
     /* cannot use a signed type for index buffer*/
-    GLCall(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, 2 * 4 * sizeof(float), positions, GL_STATIC_DRAW));
 
 
-    /* To enable and disable generic vertex attribute array */
+    /* To enable and disable index in vertex attribute array */
     GLCall(glEnableVertexAttribArray(0));
     /* glVertexAttribPointer info:
-    * index - index of attribute in buffer
-    * size -  number of components per generic vertex attribute (x, y coords? 2)
-    * type - type of data we are providing (float)
-    * normalized - specifies whether fixed-point data values shold be normalized (GL_TRUE)
-    * stride - amount of bytes between each vertex, how many bytes to go forward to next vertex
-    * pointer - how many bytes to go forward to next attribute, bytes to attributes from vertex ptr
+    * Tells OpenGL how to read data. Specifies layout. 
+    * @param index - index of attribute in buffer
+    * @param size -  number of components per generic vertex attribute (x, y coords? 2)
+    * @param type - type of data we are providing (float)
+    * @param normalized - specifies whether fixed-point data values shold be normalized (GL_TRUE)
+    * @param stride - amount of bytes between each vertex, how many bytes to go forward to next vertex
+    * @param pointer - how many bytes to go forward to next attribute, bytes to attributes from vertex ptr
     */
+    /* Binds vao to currently bound vertex buffer */
     GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
     /* index buffer */
@@ -249,6 +229,12 @@ int main(void)
     /* Set uniform in shader */
     GLCall(glUniform4f(location, 0.1f, 0.9f, 1.0f, 1.0f));
 
+    /* clearing everything so I can try reseting later */
+    GLCall(glBindVertexArray(0)); 
+    GLCall(glUseProgram(0)); 
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0)); 
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)); 
+
     float r = 0.0f;
     float increment = 0.05f;
 
@@ -258,7 +244,15 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
        
+        GLCall(glUseProgram(shader));
         GLCall(glUniform4f(location, r, 0.9f, 1.0f, 1.0f));
+
+        /* binding vertex array*/
+        /* no longer need to bind vertex buffer and set layout, just bind vao as vao and vbo are linked */
+        GLCall(glBindVertexArray(vao));
+        /* binding index buffer*/
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
         /* draw call used w/ index buffers */
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
