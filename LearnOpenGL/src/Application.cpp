@@ -39,6 +39,8 @@ ASSERT(GLLogCall(#x, __FILE__, __LINE__))
 * Index buffers: Allow one to reuse vertices. 
 * 
 * Error checking: Wrap every gl call into GLCall macro.
+* 
+* Uniforms: Set per draw. Allows us to set shader data in C++
 */
 
 
@@ -179,6 +181,9 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    /* synchronizes with our monitor's frame rate */
+    glfwSwapInterval(1);
+
     /* 
     * Initialization succeeded
     * Can use the available extensions as well as core OpenGL functionality 
@@ -236,14 +241,33 @@ int main(void)
     /* bind shader */
     GLCall(glUseProgram(shader)); 
 
+    /* Shader must be binded as above before setting uniform as below */
+    /* Retreiving location of color variable */
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    /* OpenGL strips uniforms not used by shader, therefore location == -1 is not necesarrily a fatal error */
+    ASSERT(location != -1);
+    /* Set uniform in shader */
+    GLCall(glUniform4f(location, 0.1f, 0.9f, 1.0f, 1.0f));
+
+    float r = 0.0f;
+    float increment = 0.05f;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
        
+        GLCall(glUniform4f(location, r, 0.9f, 1.0f, 1.0f));
         /* draw call used w/ index buffers */
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+        if (r > 1.0f)
+            increment = -0.05f;
+        else if (r < 0.0f)
+            increment = 0.05f;
+
+        r += increment; 
 
         /* Swap front and back buffers */
         GLCall(glfwSwapBuffers(window));
