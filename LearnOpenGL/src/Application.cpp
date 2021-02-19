@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 struct ShaderProgramSource
 {
@@ -140,6 +141,7 @@ int main(void)
 
     /* Print OpenGL version */ 
     std::cout << glGetString(GL_VERSION) << std::endl; 
+
     /* Placed inside new scope so Buffers are destroyed before glfwTerminate when the glfw context is destroyed */
     /* Best to heap allocate buffers and destroy before glfwTerminate. Rare case here as making vBuffers in main func scope */
     {
@@ -156,26 +158,11 @@ int main(void)
             2, 3, 0
         };
 
-        /* generate vao */
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
-
+        VertexArray va; 
         VertexBuffer vb(positions, 4 * 2 * sizeof(float));
-
-        /* To enable and disable index in vertex attribute array */
-        GLCall(glEnableVertexAttribArray(0));
-        /* glVertexAttribPointer info:
-        * Tells OpenGL how to read data. Specifies layout.
-        * @param index - index of attribute in buffer
-        * @param size -  number of components per generic vertex attribute (x, y coords? 2)
-        * @param type - type of data we are providing (float)
-        * @param normalized - specifies whether fixed-point data values shold be normalized (GL_TRUE)
-        * @param stride - amount of bytes between each vertex, how many bytes to go forward to next vertex
-        * @param pointer - how many bytes to go forward to next attribute, bytes to attributes from vertex ptr
-        */
-        /* Binds vao to currently bound vertex buffer */
-        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+        VertexBufferLayout layout; 
+        layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, 6);
 
@@ -211,8 +198,7 @@ int main(void)
             GLCall(glUniform4f(location, r, 0.9f, 1.0f, 1.0f));
 
             /* binding vertex array*/
-            /* no longer need to bind vertex buffer and set layout, just bind vao as vao and vbo are linked */
-            GLCall(glBindVertexArray(vao));
+            va.Bind();
             /* binding index buffer*/
             ib.Bind();
 

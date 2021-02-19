@@ -11,7 +11,7 @@ layers operated in Photoshop. Layer must be selected to do work on said layer.
 
 - Vertex Shader: Called for each vertex (ex. called three times for a triangle). 
 - Primary purpose is to tell OpenGL where you want the vertex
-- to be in the window. Also used to pass attributes into next stage (Fragment Shader)
+to be in the window. Also used to pass attributes into next stage (Fragment Shader)
 
 - Fragment Shader: Runs once for each pixel that needs to be rasterized. Decides the correct color the 
 pixel needs to be. 
@@ -54,4 +54,9 @@ Two approaches to VAO:
 	2. Have a seperate VAO for each unique piece of geometry. 
 
 Which one is more optimal?
-	In the past, Nvida said approach 1 was better. However, it depends. With current drivers it may depend on your platform. Using muliple VAOs is what OpenGL recommends. 
+	In the past, Nvida said approach 1 was better. However, it depends. With current drivers it may depend on your platform. Using muliple VAOs is what OpenGL recommends.
+
+/*********************************Vertex Buffers and Arrays*********************************/
+Vertex buffers are just buffers with data. No concept such as, "the first three numbers are a position and they are floats" etc, etc. 
+Vertex Arrays are for tying the vertex buffer with a layout. 
+Vertex Arrays are also useful if we want to read the vertex buffer data on the CPU side. We need vertex arrays to make use of the data.  
