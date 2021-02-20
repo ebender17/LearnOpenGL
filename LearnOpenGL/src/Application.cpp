@@ -7,7 +7,9 @@
 #include <sstream>
 
 #include "Renderer.h"
+
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
@@ -82,6 +84,8 @@ int main(void)
         vb.UnBind();
         ib.UnBind();
 
+        Renderer renderer;
+
         float r = 0.0f;
         float increment = 0.05f;
 
@@ -89,18 +93,17 @@ int main(void)
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            GLCall(glClear(GL_COLOR_BUFFER_BIT));
+            renderer.Clear();
 
+            /* 
+            * Renderer typically takes in a material instead of a shader. 
+            * Therefore, uniforms would not have to be handled as below. 
+            * Will get to materials (shaders + uniforms) in the future. 
+            */
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
 
-            /* binding vertex array*/
-            va.Bind();
-            /* binding index buffer*/
-            ib.Bind();
-
-            /* draw call used w/ index buffers */
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            renderer.Draw(va, ib, shader);
 
             if (r > 1.0f)
                 increment = -0.05f;
