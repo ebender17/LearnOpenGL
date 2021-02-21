@@ -60,3 +60,34 @@ Which one is more optimal?
 Vertex buffers are just buffers with data. No concept such as, "the first three numbers are a position and they are floats" etc, etc. 
 Vertex Arrays are for tying the vertex buffer with a layout. 
 Vertex Arrays are also useful if we want to read the vertex buffer data on the CPU side. We need vertex arrays to make use of the data.  
+
+/*********************************Renderer*********************************/
+Think of the Renderer as a factory. Takes in all parts (Vertex Buffer, Index Buffer, Shader) and draws what it wanted on screen. 
+
+Do not call Unbind in draw call in Renderer as unbinding is a waste of performance. By the time we unbind, we will have to bind 
+everything again for the next draw. In complex systemes, Unbinding is called during debug config to help with debugging and 
+stripped in release. 
+
+Renderer Draw call typically takes in Vertex Buffer, Index Buffer, and a Material (not a Shader). 
+- Material: Shader and its uniforms (data)
+
+/*********************************Textures*********************************/
+1. Load image into CPU memory in order to send to OpenGL
+2. Create texture in OpenGL
+3. Bind texture when it is time to render
+4. Modify shader to bind to the texture slot
+5. Sample texture in shader 
+
+In OpenGL we have various slots that we can bind textures to. The reason this exists is we have the ability to bind more than one texture at once. 
+The number of slots depends on the GPU and their implementation of OpenGL. 
+
+Need to tell shader whitch texture slot to sample from. This is done with a uniform. This is not really an integer slot, it is done with something 
+called a sampler slot. Basically what we need to do is send an integer uniform to our shader and that integer is the slot that we have bound our 
+texture to that we want to sample from. In the shader code we can use that sampler or the integer we have passed in to sample the texture.
+
+Need to use texture coordinate system to tell our geometry we are rendering which part of the texture to sample from. Fragment shader goes through 
+the rectangle and draws every pixel. When it is up to rendering a certain pixel, need to teel renderer to sample a certain area of the texture to 
+retrieve what color the pixel should be. 
+	-> Basically need to say the bottom left of our rectangle on our screen is coord (0, 0) and the top right is the other end of the texture (1, 1).
+	-> Do not tie textures to a resolution. Could be any size, we just need to specific an area of the texture sample. Fragment shader will interpolate
+	between vertices. 
