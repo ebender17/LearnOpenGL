@@ -91,3 +91,49 @@ retrieve what color the pixel should be.
 	-> Basically need to say the bottom left of our rectangle on our screen is coord (0, 0) and the top right is the other end of the texture (1, 1).
 	-> Do not tie textures to a resolution. Could be any size, we just need to specific an area of the texture sample. Fragment shader will interpolate
 	between vertices. 
+
+/*********************************Textures*********************************/
+What is blending?
+	-Blending in OpenGL can be thought of as allowing transparency
+	-Blending determines how we combine our output color with what is already in our target buffer. 
+	-Output = the color we output from our fragment shader (known as source)
+	-Target buffer = the buffer our fragment shader is drawing to (known as destination)
+How do we control blending?
+	1. glEnable(GL_BLEND) - glDisable(GL_BLEND)- By default, OpenGL does not enable blending.
+	2. glBlendFunc(src, dest)
+		-src = how the src RGBA factor is computed (default is GL_ONE) 
+		When the factor is GL_ONE we take our source RGBA channels all seperately and mult by one. This means
+		whatever the source is does not change.  
+		-dest = how the dest RGBA factor is computed (default is GL_ZERO)
+		When the factor is GL_ZERO we take dest RGBA channels all seperately and mult by zero. This means everything
+		in dest will be replaced by src. 
+	3. glBlendEquation(mode)
+		- mode = how we combine the src and dest colors
+		Default value is GL_FUNC_ADD
+	So what this means by default is: 
+		1 + 0 = 1
+		Use the source value
+
+Example: 
+	-src = GL_SRC_ALPHA 
+	-dest = GL_ONE_MINUS_SRC_ALPHA
+	
+	So if the pixel we are rendering from our texture is transparent:
+	-src alpha = 0 
+	-dest = 1 - 0 = 1
+	Which means "use the destination color" - the color that's already in the buffer 
+	R = (rsrc * 0) + (rdest * (1 - 0)) = rdest
+	G = (rsrc * 0) + (rdest * (1 - 0)) = rdest
+	B = (rsrc * 0) + (rdest * (1 - 0)) = rdest
+	A = (rsrc * 0) + (rdest * (1 - 0)) = rdest
+Another Example:
+	Our pixel is partially transparents, let's say (1.0, 1.0, 1.0, 0.5) (RGBA)
+	-So it is white but translucent 
+	Our dest buffer is cleared to magenta (1.0, 0.0, 1.0, 1.0)
+	
+	So using the blend setting from the example above: 
+	R = (1.0 * 0.5) + (1.0 * (1 - 0.5)) = 1.0
+	G = (1.0 * 0.5) + (0.0 * (1 - 0.5)) = 0.5
+	B = (1.0 * 0.5) + (1.0 * (1 - 0.5)) = 1.0
+	A = (0.5 * 0.5) + (1.0 * (1 - 0.5)) = 0.75
+		
