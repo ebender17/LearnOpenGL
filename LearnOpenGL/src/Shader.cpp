@@ -132,6 +132,19 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
     GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 }
 
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+    /*
+    * @param location - uniorm location 
+    * @param count - how many matrices we are providing 
+    * @param transpose - do we need to transpose matrix? If matrix is a row major matrix, meaning 
+    * the way our matrix is laid out in memory is by the rows not the columns, you need to transpose it.
+    * We do not need to transpose b/c GLM stores its matrix elements in column major. 
+    * @param value - pointer to value array
+    */
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0])); 
+}
+
 
 
 int Shader::GetUniformLocation(const std::string& name)

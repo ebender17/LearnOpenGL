@@ -1,0 +1,17 @@
+/*********************************OpenGL Notes*********************************/
+
+
+/*********************************Math*********************************/
+Two concepts that are most essential to graphics programming: 
+	Vectors 
+	Matrices 
+The most common usage of these concepts is for transformation.
+In 3D grahpical worlds there is no such thing as a "camera." What is really being done is the world is being
+moved around to create the illusion of a camera.
+
+Using GLM for math library. The standard for OpenGL.
+
+Projection Matrix - A way to tell our window how we want to map all our different vertices to it.
+
+We have a mathematical representation of a 3D word, but we need to convert it to a 2D drawing. This is what 
+projection matrices are used for. 
