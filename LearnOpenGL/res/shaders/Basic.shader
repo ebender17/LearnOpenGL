@@ -28,4 +28,5 @@ void main()
 {
 	vec4 textColor = texture(u_Texture, v_TextCoord);
 	color = textColor;
+	color = vec4(1.0);
 };

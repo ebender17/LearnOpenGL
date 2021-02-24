@@ -15,3 +15,34 @@ Projection Matrix - A way to tell our window how we want to map all our differen
 
 We have a mathematical representation of a 3D word, but we need to convert it to a 2D drawing. This is what 
 projection matrices are used for. 
+
+
+/*********************************Projection Matrices*********************************/
+What does the Projection Matrix do? 
+	Converts coordinates or vertex positions in our digital world into our normalized device coordinate space
+	of -1 to 1. 
+
+We convert all of the positions we have in our 2D or 3D worlds into normalized device coordinates which is basically
+some type of normalized space that we can map to our window.
+	- Normalized space - coordinate system between -1 and 1, left side -1, right side 1, down -1, up 1 
+
+If you are outside of this coordinate space, the item will not be rendered on screen. 
+
+It is a little hard to deal with normalized space, therefore projection matrices help us convert from our 
+coordinate space to the normalized space. 
+	If you think of 3D space, it is not easy as scaling world positions into the -1 to 1 space. 
+	Perspective plays a part meaning objects closer appear larger and objects farther appear smaller. 
+	The projection matrices helps convert positions to 3D space by altering positions based on the depth 
+	of the object (z axis). 
+
+Orthographic Projection - means of representing three-dimensional objects in two dimensions. In an orthographic view,
+all objects appear at the same scale. Think about 2D games you grew up with on the GameBoy. Fixed depth. There is no 
+distance from the camera. 
+
+Perspective Projection - means of representing three-dimensional objects on a two dimensional screen. 
+In the perspective view, objects which are far away are smaller than those nearby. The distance and angles are not 
+preserved and parallel lines do not remain paralell. Instead, they all converge at a single point called center 
+of projection or projection refernce point. 
+
+In both orthographic and perspective projection the same thing happens, tell computer how to convert from whatever space
+you are dealing with (something you define yourself) to the -1 to 1 normalized device coordinate space. 

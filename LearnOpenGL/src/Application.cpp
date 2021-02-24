@@ -32,7 +32,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "OpenGL Practice", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "OpenGL Practice", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -60,10 +60,10 @@ int main(void)
     {
 
         float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f, //Bottom left, last two floats are text coords
-            0.5f, -0.5f, 1.0f, 0.0f, //Bottom right
-            0.5f, 0.5f, 1.0f, 1.0f, // Top right
-            -0.5f, 0.5f, 0.0f, 1.0f //Top left
+            100.0f, 100.0f, 0.0f, 0.0f, //Bottom left, last two floats are text coords
+            200.0f, 100.0f, 1.0f, 0.0f, //Bottom right
+            200.0f, 200.0f, 1.0f, 1.0f, // Top right
+            100.0f, 200.0f, 0.0f, 1.0f //Top left
         };
 
         unsigned int indices[] = {
@@ -87,10 +87,9 @@ int main(void)
         /* 
         * Projection Matrix 
         * 4 by 3 aspect ratio
-        * ortho projecting because we are dealing with a 2D world
-        * The first four values specify the boundries of our window. 
-        * */
-        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f); 
+        * The first four values specify the bounds 
+        */
+        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f); 
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
