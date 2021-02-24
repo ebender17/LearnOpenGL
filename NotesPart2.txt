@@ -45,4 +45,26 @@ preserved and parallel lines do not remain paralell. Instead, they all converge 
 of projection or projection refernce point. 
 
 In both orthographic and perspective projection the same thing happens, tell computer how to convert from whatever space
-you are dealing with (something you define yourself) to the -1 to 1 normalized device coordinate space. 
+you are dealing with (something you define yourself) to the -1 to 1 normalized device coordinate space.
+
+
+/*********************************Model View Projection Matrices*********************************/
+Two other matrices that are important with the transformation of geometry when we render it on screen.
+	- View Matrix (eye matrix) - way to simulate a camera ("camera view"), transform of our camera 
+	- Model Matrix - way to simulate the model (the model, the vertex we are drawing) matrix, transformation of the model, transform of our object
+These matrices along with the projection matrix are multipled together with each vertex position to give us the final 
+position of our vertexes in the 3D or 2D world on screen. 
+
+These matrices are usually referred to as the MVP matrix. MVP does not necessarly mean the matrices are multiplied together in this order.
+	In OpenGL it should really be PVM as we deal with column major ordering
+	When using row major ordering, matrices are multiplied together in MVP order.
+
+Remember these matrices are just numbers. You do not have to have a "camera", you could multiple two model matrices. It is up to use these three 
+matricies. 
+
+To simulate a camera moving left, we move everything right. 
+
+Summary:
+Model matrix: defines position, rotation and scale of the vertices of the model in the world.
+View matrix: defines position and orientation of the "camera".
+Projection matrix: Maps what the "camera" sees to NDC, taking care of aspect ratio and perspective. 
